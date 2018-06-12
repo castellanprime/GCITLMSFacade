@@ -14,8 +14,14 @@ public class LmsclientApplication {
 		SpringApplication.run(LmsclientApplication.class, args);
 	}
 	
+	/**
 	@Bean
 	public RestTemplate restTemplate(RestTemplateBuilder builder) {
 		return builder.requestFactory(new HttpComponentsClientHttpRequestFactory()).build();
+	}**/
+	
+	@Bean
+	public RestTemplate restTemplate() {
+		return new RestTemplate(new HttpComponentsClientHttpRequestFactory());
 	}
 }
