@@ -35,19 +35,21 @@ import com.gcit.lmsclient.entity.Book;
 import com.gcit.lmsclient.entity.Genre;
 import com.gcit.lmsclient.entity.LibraryBranch;
 import com.gcit.lmsclient.entity.Publisher;
+import com.gcit.lmsclient.entity.LibraryBookCopies;
 
 @RestController
 @RequestMapping("/lmsclient/")
 public class LMSClient {
 	
 	// Urls
-	private final String AUTHORS_URL = "http://localhost:9080/lmsspringboot/admin/authors";
-	private final String BRANCHES_URL = "http://localhost:9080/lmsspringboot/admin/branches";
-	private final String PUBLISHERS_URL = "http://localhost:9080/lmsspringboot/admin/publishers";
-	private final String GENRES_URL = "http://localhost:9080/lmsspringboot/admin/genres";
-	private final String BOOKS_URL = "http://localhost:9080/lmsspringboot/admin/books";
-	private final String LOANS_URL = "http://localhost:9080/lmsspringboot/admin/loans";
-	private final String BORROWERS_URL = "http://localhost:9090/lmsspringboot/borrowers";
+	private final String AUTHORS_URL = "http://ec2-18-221-204-95.us-east-2.compute.amazonaws.com:9060/lmsspringboot/admin/authors";
+	private final String BRANCHES_URL = "http://ec2-18-221-204-95.us-east-2.compute.amazonaws.com:9060/lmsspringboot/admin/branches";
+	private final String PUBLISHERS_URL = "http://ec2-18-221-204-95.us-east-2.compute.amazonaws.com:9060/lmsspringboot/admin/publishers";
+	private final String GENRES_URL = "http://ec2-18-221-204-95.us-east-2.compute.amazonaws.com:9060/lmsspringboot/admin/genres";
+	private final String BOOKS_URL = "http://ec2-18-221-204-95.us-east-2.compute.amazonaws.com:9060/lmsspringboot/admin/books";
+	private final String LOANS_URL = "http://ec2-18-221-204-95.us-east-2.compute.amazonaws.com:9060/lmsspringboot/admin/loans";
+	private final String BORROWERS_URL = "http://ec2-52-14-71-239.us-east-2.compute.amazonaws.com:9070/lmspringboot/borrowers";
+	private final String LIBRARIANS_URL = "http://ec2-18-191-116-192.us-east-2.compute.amazonaws.com:9080/lmsspringboot/librarians/branches";
 	
 	// Authors
 	@Autowired
@@ -427,4 +429,40 @@ public class LMSClient {
 		return response.getBody();
 	}
 	
+	@CrossOrigin
+	@GetMapping("/librarians/branches/{branchId}/books/{bookId}/copies")
+	public LibraryBookCopies getCopiesOfBookInBranch(@PathVariable int branchId, 
+			@PathVariable int bookId) {
+		Map<String, Integer> params = new HashMap<String, Integer>();
+		params.put("branchId", branchId);
+		params.put("bookId", bookId);
+		String url = LIBRARIANS_URL + "/{branchId}/books/{bookId}/copies";
+		URI uri = UriComponentsBuilder.fromUriString(url)
+		        .buildAndExpand(params)
+		        .toUri();
+		ResponseEntity<LibraryBookCopies> response = 
+				restTemplate.exchange(uri, HttpMethod.GET, null, LibraryBookCopies.class);
+		return response.getBody();
+	}
+	
+	@CrossOrigin
+	@PostMapping("/librarians/branches/books")
+	public LibraryBookCopies addNewBookToBranch(@RequestBody LibraryBookCopies lbc) {
+		String targetUrl = LIBRARIANS_URL + "/books"; 
+		ResponseEntity<LibraryBookCopies> response = 
+				restTemplate.postForEntity(targetUrl, lbc, LibraryBookCopies.class);
+		return response.getBody();
+	}
+	
+	@CrossOrigin
+	@PatchMapping("/librarians/branches/books/copies")
+	public LibraryBookCopies updateCopiesOfBookInBranch(@RequestBody LibraryBookCopies lbc) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+		HttpEntity<?> entity = new HttpEntity<>(lbc, headers);
+		String targetUrl = LIBRARIANS_URL + "/books/copies"; 
+		ResponseEntity<LibraryBookCopies> response = 
+				restTemplate.exchange(targetUrl, HttpMethod.PATCH, entity,LibraryBookCopies.class);
+		return response.getBody();
+	}
 }
