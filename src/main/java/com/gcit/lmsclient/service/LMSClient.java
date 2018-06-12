@@ -48,7 +48,7 @@ public class LMSClient {
 	private final String GENRES_URL = "http://ec2-18-221-204-95.us-east-2.compute.amazonaws.com:9060/lmsspringboot/admin/genres";
 	private final String BOOKS_URL = "http://ec2-18-221-204-95.us-east-2.compute.amazonaws.com:9060/lmsspringboot/admin/books";
 	private final String LOANS_URL = "http://ec2-18-221-204-95.us-east-2.compute.amazonaws.com:9060/lmsspringboot/admin/loans";
-	private final String BORROWERS_URL = "http://ec2-52-14-71-239.us-east-2.compute.amazonaws.com:9070/lmspringboot/borrowers";
+	private final String BORROWERS_URL = "http://ec2-18-216-237-194.us-east-2.compute.amazonaws.com:9070/lmsspringboot/borrowers";
 	private final String LIBRARIANS_URL = "http://ec2-18-191-116-192.us-east-2.compute.amazonaws.com:9080/lmsspringboot/librarians/branches";
 	
 	// Authors
