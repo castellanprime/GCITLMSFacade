@@ -65,7 +65,7 @@ public class LMSClient {
 	}
 	
 	@CrossOrigin
-	@PostMapping("/authors")
+	@PostMapping("/author")
 	public Author saveAuthor(@RequestParam String name) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
@@ -125,7 +125,7 @@ public class LMSClient {
 	// Branches
 	
 	@CrossOrigin
-	@PostMapping("/branches")
+	@PostMapping("/branch")
 	public LibraryBranch saveBranch(@RequestBody LibraryBranch branch) {
 		ResponseEntity<LibraryBranch> response = 
 				restTemplate.postForEntity(BRANCHES_URL, branch, LibraryBranch.class);
@@ -169,7 +169,7 @@ public class LMSClient {
 
 	
 	@CrossOrigin
-	@PostMapping("/publishers")
+	@PostMapping("/publisher")
 	public Publisher savePublisher(@RequestBody Publisher sentPublisher) {
 		ResponseEntity<Publisher> response = 
 				restTemplate.postForEntity(PUBLISHERS_URL, sentPublisher, Publisher.class);
@@ -233,7 +233,7 @@ public class LMSClient {
 	}
 	
 	@CrossOrigin
-	@PostMapping("/genres")
+	@PostMapping("/genre")
 	public Genre saveGenre(@RequestParam String name) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
@@ -278,7 +278,7 @@ public class LMSClient {
 	
 
 	@CrossOrigin
-	@PostMapping("/books")
+	@PostMapping("/book")
 	public Book saveBook(@RequestBody BookDTO bookDto) {
 		ResponseEntity<Book> response = 
 				restTemplate.postForEntity(BOOKS_URL, bookDto, Book.class);
@@ -359,7 +359,7 @@ public class LMSClient {
 	}
 	
 	@CrossOrigin
-	@PostMapping("/borrowers")
+	@PostMapping("/borrower")
 	public Borrower addBorrower(@RequestBody Borrower sentBorrower){
 		ResponseEntity<Borrower> response = 
 				restTemplate.postForEntity(BORROWERS_URL, sentBorrower, Borrower.class);
