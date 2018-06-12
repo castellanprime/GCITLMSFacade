@@ -28,6 +28,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.gcit.lmsclient.entity.BookDTO;
 import com.gcit.lmsclient.entity.BookLoanDTO;
 import com.gcit.lmsclient.entity.BookLoan;
+import com.gcit.lmsclient.entity.Borrower;
+import com.gcit.lmsclient.entity.BookLoanInputDTO;
 import com.gcit.lmsclient.entity.Author;
 import com.gcit.lmsclient.entity.Book;
 import com.gcit.lmsclient.entity.Genre;
@@ -45,6 +47,7 @@ public class LMSClient {
 	private final String GENRES_URL = "http://localhost:9080/lmsspringboot/admin/genres";
 	private final String BOOKS_URL = "http://localhost:9080/lmsspringboot/admin/books";
 	private final String LOANS_URL = "http://localhost:9080/lmsspringboot/admin/loans";
+	private final String BORROWERS_URL = "http://localhost:9090/lmsspringboot/borrowers";
 	
 	// Authors
 	@Autowired
@@ -352,4 +355,76 @@ public class LMSClient {
 						new ParameterizedTypeReference<List<BookLoan>>(){});
 		return response.getBody();
 	}
+	
+	@CrossOrigin
+	@PostMapping("/borrowers")
+	public Borrower addBorrower(@RequestBody Borrower sentBorrower){
+		ResponseEntity<Borrower> response = 
+				restTemplate.postForEntity(BORROWERS_URL, sentBorrower, Borrower.class);
+		return response.getBody();
+	}
+	
+	@CrossOrigin
+	@GetMapping("/borrowers")
+	public List<Borrower> getAllBorrowers(){
+		ResponseEntity<List<Borrower>> response = 
+				restTemplate.exchange(BORROWERS_URL, HttpMethod.GET, null, 
+						new ParameterizedTypeReference<List<Borrower>>(){});
+		return response.getBody();
+	}
+	
+	@CrossOrigin
+	@DeleteMapping("/borrowers/{cardNo}")
+	public HttpHeaders deleteBorrower(@PathVariable int cardNo) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+		HttpEntity<?> entity = new HttpEntity<>(headers);
+		String targetUrl = BORROWERS_URL + "/" + cardNo;
+		ResponseEntity<?> response = 
+			restTemplate.exchange(targetUrl, HttpMethod.DELETE, entity, Borrower.class);
+		return response.getHeaders();
+	}
+	
+	@CrossOrigin
+	@PatchMapping("/borrowers/{cardNo}")
+	public BookLoan modifyBorrower(@PathVariable int cardNo, 
+			@RequestParam (value="name", required=false) String name, 
+			@RequestParam (value="phone", required=false) String phone, 
+			@RequestParam (value="address", required=false) String address) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+		HttpEntity<?> entity = new HttpEntity<>(headers);
+		String targetUrl = BORROWERS_URL + "/" + cardNo;
+		UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(targetUrl)
+				.queryParam("name", name)
+				.queryParam("phone", phone)
+				.queryParam("address", address);
+		ResponseEntity<BookLoan> response = 
+				restTemplate.exchange(builder.build().toString(), HttpMethod.PATCH, entity, BookLoan.class);
+		return response.getBody();
+	}
+	
+	@CrossOrigin
+	@PostMapping("/borrowers/{cardNo}/checkouts")
+	public BookLoan checkOutBook(@RequestBody BookLoanInputDTO bookLoanInputDto, 
+			@PathVariable int cardNo) {
+		String targetUrl = BORROWERS_URL + "/" + cardNo + "/checkouts";
+		ResponseEntity<BookLoan> response = 
+				restTemplate.postForEntity(targetUrl, bookLoanInputDto, BookLoan.class);
+		return response.getBody();
+	}
+	
+	@CrossOrigin
+	@PatchMapping("/borrowers/{cardNo}/returns")
+	public BookLoan returnBook(@RequestBody BookLoanInputDTO bookLoanInputDto, 
+			@PathVariable int cardNo) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+		HttpEntity<?> entity = new HttpEntity<>(bookLoanInputDto, headers);
+		String targetUrl = BORROWERS_URL + "/" + cardNo + "/returns";
+		ResponseEntity<BookLoan> response = 
+				restTemplate.exchange(targetUrl, HttpMethod.PATCH, entity, BookLoan.class);
+		return response.getBody();
+	}
+	
 }
